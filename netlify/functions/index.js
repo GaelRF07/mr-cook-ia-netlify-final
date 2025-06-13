@@ -8,17 +8,17 @@ app.use(cors());
 // Habilita el parsing de JSON en el body de la solicitud
 app.use(express.json());
 
-// Define la lógica de tu 'IA' para la ruta /mrCookIA
-app.post("/mrCookIA", (req, res) => {
+// Define la lógica de tu 'IA' para CUALQUIER ruta POST recibida por la funcion
+// El comodin "*" asegura que Express siempre reciba la solicitud POST.
+app.post("*", (req, res) => { // <--- CAMBIO AQUÍ: de "/mrCookIA" a "*"
     // --- Logs para depuración (aparecerán en los logs de Netlify Functions) ---
     console.log("-------------------");
-    console.log("Request received for /mrCookIA");
-    console.log("Request Body:", req.body); // Muestra todo el cuerpo de la solicitud
+    console.log("Request received (POST wildcard)");
+    console.log("Original URL:", req.originalUrl); // Ver la URL completa que Express ve
+    console.log("Request Body:", req.body);
 
-    // Extrae la pregunta del cuerpo de la solicitud JSON
-    // Si req.body.pregunta no existe, usa una cadena vacía para evitar errores
     const pregunta = (req.body.pregunta || "").toLowerCase();
-    console.log("Pregunta extraída:", pregunta); // Muestra la pregunta que tu función está usando
+    console.log("Pregunta extraída:", pregunta);
 
     let respuesta = "Lo siento, no entendí tu pregunta.";
 
@@ -38,13 +38,11 @@ app.post("/mrCookIA", (req, res) => {
         respuesta = "Te llevo al registro de alimentos...";
     }
 
-    console.log("Respuesta generada:", respuesta); // Muestra la respuesta que se va a enviar
+    console.log("Respuesta generada:", respuesta);
     console.log("-------------------");
 
-    // Envía la respuesta como JSON
     return res.json({ respuesta });
 });
 
 // Este es el punto de entrada para Netlify Functions
-// Envuelve tu aplicación Express para que funcione como una Lambda
 exports.handler = serverless(app);
