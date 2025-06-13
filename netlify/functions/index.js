@@ -3,14 +3,22 @@ const cors = require("cors");
 const app = express();
 const serverless = require("serverless-http");
 
-app.use(cors()); // Habilita CORS para todas las solicitudes
-app.use(express.json()); // Habilita el parsing de JSON en el body de la solicitud
+// Habilita CORS para todas las solicitudes
+app.use(cors());
+// Habilita el parsing de JSON en el body de la solicitud
+app.use(express.json());
 
 // Define la lógica de tu 'IA' para la ruta /mrCookIA
 app.post("/mrCookIA", (req, res) => {
-    // ¡ESTA ES LA LÍNEA QUE FALTABA Y CAUSABA EL ERROR 502!
+    // --- Logs para depuración (aparecerán en los logs de Netlify Functions) ---
+    console.log("-------------------");
+    console.log("Request received for /mrCookIA");
+    console.log("Request Body:", req.body); // Muestra todo el cuerpo de la solicitud
+
     // Extrae la pregunta del cuerpo de la solicitud JSON
+    // Si req.body.pregunta no existe, usa una cadena vacía para evitar errores
     const pregunta = (req.body.pregunta || "").toLowerCase();
+    console.log("Pregunta extraída:", pregunta); // Muestra la pregunta que tu función está usando
 
     let respuesta = "Lo siento, no entendí tu pregunta.";
 
@@ -30,6 +38,10 @@ app.post("/mrCookIA", (req, res) => {
         respuesta = "Te llevo al registro de alimentos...";
     }
 
+    console.log("Respuesta generada:", respuesta); // Muestra la respuesta que se va a enviar
+    console.log("-------------------");
+
+    // Envía la respuesta como JSON
     return res.json({ respuesta });
 });
 
